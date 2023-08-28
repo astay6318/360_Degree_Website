@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Website{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <!-- Common header content -->
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about/">About</a></li>
+                <!-- Add other common links here -->
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}
+            <!-- Content specific to each page will go here -->
+        {% endblock %}
+    </main>
+
+    <footer>
+        <!-- Common footer content -->
+    </footer>
+</body>
+</html>
