@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Login</h2>
+  <form method="post">
+    {% csrf_token %}
+    {% if user_form %}
+      {{ user_form.username.label_tag }} {{ user_form.username }}
+      {{ user_form.password.label_tag }} {{ user_form.password }}
+    {% endif %}
+    {% if teacher_form %}
+      {{ teacher_form.username.label_tag }} {{ teacher_form.username }}
+      {{ teacher_form.password.label_tag }} {{ teacher_form.password }}
+    {% endif %}
+    <button type="submit">Login</button>
+  </form>
+{% endblock %}

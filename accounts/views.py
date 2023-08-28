@@ -1,9 +1,9 @@
 from django.shortcuts import render,redirect
-from django.contrib.auth.forms import UserCreationForm
+# from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, StudentLoginForm, TeacherLoginForm
 
 @csrf_exempt
 def register(request):
@@ -23,3 +23,27 @@ def register(request):
     else:
         form = CustomUserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
+
+@csrf_exempt
+def user_login(request):
+    if request.method == 'POST':
+        studentform = StudentLoginForm(data=request.POST)
+        teacherform = TeacherLoginForm(data=request.POST)
+        if studentform.is_valid():
+            user = studentform.get_user()
+            login(request,user)
+            if user.role == 'student':
+                return redirect('student_dashboard')
+            else:
+                return redirect('teacher_dashboard')
+        if teacherform.is_valid():
+            user = teacherform.get_user()
+            login(request, user)
+            if user.role == 'student':
+                return redirect('student_dashboard')
+            elif user.role == 'teacher':
+                return redirect('teacher_dashboard')
+    else:
+        studentform = StudentLoginForm()
+        teacherform = TeacherLoginForm()
+    return render(request, 'registration/login.html', {'student_form': studentform, 'teacher_form': teacherform,})
