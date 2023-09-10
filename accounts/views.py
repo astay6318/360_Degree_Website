@@ -14,7 +14,7 @@ def register(request):
             # User.role = request.POST.get('role')
             user.save()
             login(request, user)
-            return JsonResponse({'message': 'Registration successful'})
+            return JsonResponse({'message': 'Registration successful'},status=200)
         # username=request.data('username')
         # obj=User.obhjects.create(username=,email=,password=)
         # return JsonResponse()
@@ -33,14 +33,14 @@ def user_login(request):
             user = studentform.get_user()
             login(request,user)
             if user.role == 'student':
-                return redirect('student_dashboard')
+                return redirect('student_dashboard',status=200)
             else:
                 return redirect('teacher_dashboard')
         if teacherform.is_valid():
             user = teacherform.get_user()
             login(request, user)
             if user.role == 'student':
-                return redirect('student_dashboard')
+                return redirect('student_dashboard',status=200)
             elif user.role == 'teacher':
                 return redirect('teacher_dashboard')
     else:

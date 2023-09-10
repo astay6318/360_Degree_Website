@@ -8,11 +8,12 @@ class CustomUserCreationForm(UserCreationForm):
         ('teacher', 'Teacher'),
     )
     role = forms.ChoiceField(choices=ROLES)
-    first_name = forms.CharField(max_length=100)
-    last_name = forms.CharField(max_length=100)
+    firstname = forms.CharField(max_length=100)
+    lastname = forms.CharField(max_length=100)
+    username = forms.CharField(max_length=100)
     class Meta:
         model = CustomUser
-        fields = UserCreationForm.Meta.fields + ('role','first_name','last_name',)
+        fields = UserCreationForm.Meta.fields + ('role','firstname','lastname','username',)
 
 
 class StudentLoginForm(AuthenticationForm):
