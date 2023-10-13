@@ -39,9 +39,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'corsheaders',
+    'rest_framework',
+    'dj_rest_auth',
+    'rest_framework.authtoken',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 ]
 
 MIDDLEWARE = [
+    'allauth.account.middleware.AccountMiddleware',  # Added 'allauth.account.middleware.AccountMiddleware'
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -50,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 ROOT_URLCONF = 'BTP.urls'
 
@@ -100,6 +108,30 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',  # For session-based authentication
+        'rest_framework.authentication.TokenAuthentication',    # For token-based authentication
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # For JWT authentication
+    ),
+    # Other REST framework settings...
+}
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # Use the default ModelBackend for session authentication
+    'allauth.account.auth_backends.AuthenticationBackend',  # Use allauth's authentication backend
+)
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+    'SLIDING_TOKEN_LIFETIME': timedelta(days=1),
+    'SLIDING_TOKEN_REFRESH_LIMIT': timedelta(days=30),
+    'SLIDING_TOKEN_REFRESH_EACH_TIME': False,
+    'SLIDING_TOKEN_NAME': 'token',
+    'SLIDING_TOKEN_COOKIE_SECURE': False,
+    'SLIDING_TOKEN_COOKIE_HTTPONLY': False,
+}
 
 
 # Internationalization
@@ -127,3 +159,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+MEDIA_URL = '/media/'
+
+REST_AUTH = {
+    'USE_JWT': True,
+    'JWT_AUTH_COOKIE': 'jwt-auth',
+}
