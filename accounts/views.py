@@ -4,8 +4,17 @@ from django.contrib.auth import login
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .forms import CustomUserCreationForm, StudentLoginForm, TeacherLoginForm
+from .models import ImageStore
+from rest_framework import viewsets
+from .serializers import ImgaeStoreSerializer
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.decorators import api_view, permission_classes
+
 
 @csrf_exempt
+@api_view(['POST'])
+@permission_classes((AllowAny, ))
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -47,3 +56,8 @@ def user_login(request):
         studentform = StudentLoginForm()
         teacherform = TeacherLoginForm()
     return render(request, 'registration/login.html', {'student_form': studentform, 'teacher_form': teacherform,})
+
+class RandomViewSet(viewsets.ModelViewSet):
+    queryset = ImageStore.objects.all()
+    serializer_class = ImgaeStoreSerializer
+    permission_classes = [IsAuthenticated]
