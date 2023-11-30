@@ -4,16 +4,18 @@ from django.contrib.auth import login
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .forms import CustomUserCreationForm, StudentLoginForm, TeacherLoginForm
-from .models import ImageStore
+from .models import ImageStore,Teacher,SubChapter,Lesson
 from rest_framework import viewsets
-from .serializers import ImgaeStoreSerializer
+from .serializers import ImgaeStoreSerializer,TeacherSerializer,SubChapterSerializer,LessonSerializer
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
+from dj_rest_auth.views import LoginView as RestAuthLoginView
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.response import Response
 
 @csrf_exempt
 @api_view(['POST'])
@@ -26,7 +28,11 @@ def register(request):
             # User.role = request.POST.get('role')
             user.save()
             login(request, user)
-            return JsonResponse({'message': 'Registration successful'},status=200)
+            if user.role == 'student':
+                return redirect('student_dashboard')
+            elif user.role == 'teacher':
+                return redirect('teacher_dashboard')
+            # return JsonResponse({'message': 'Registration successful'},status=200)
         # username=request.data('username')
         # obj=User.obhjects.create(username=,email=,password=)
         # return JsonResponse()
@@ -35,6 +41,20 @@ def register(request):
     else:
         form = CustomUserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
+
+
+# class CustomLoginView(RestAuthLoginView):
+#     def post(self, request, *args, **kwargs):
+#         response = super().post(request, *args, **kwargs)
+#         if response.status_code == 200:
+#             user = request.user
+#             if user.role == 'student':
+#                 response.data['role'] = 'student'
+#                 response.data['redirect_url'] = 'student_dashboard'
+#             elif user.role == 'teacher':
+#                 response.data['role'] = 'teacher'
+#                 response.data['redirect_url'] = 'teacher_dashboard'
+#         return response
 
 # @csrf_exempt
 # def user_login(request):
@@ -98,5 +118,17 @@ def register(request):
 class RandomViewSet(viewsets.ModelViewSet):
     queryset = ImageStore.objects.all()
     serializer_class = ImgaeStoreSerializer
-    # authentication_classes = (SessionAuthentication,)
+    # authentication_classes = (,)
     # permission_classes = [IsAuthenticated]
+
+class TeacherViewSet(viewsets.ModelViewSet):
+    queryset = Teacher.objects.all()
+    serializer_class = TeacherSerializer
+
+class LessonViewSet(viewsets.ModelViewSet):
+    queryset = Lesson.objects.all()
+    serializer_class = LessonSerializer
+
+class SubChapterViewSet(viewsets.ModelViewSet):
+    queryset = SubChapter.objects.all()
+    serializer_class = SubChapterSerializer
