@@ -140,3 +140,13 @@ class SceneViewSet(viewsets.ModelViewSet):
 class HotspotViewSet(viewsets.ModelViewSet):
     queryset = Hotspot.objects.all()
     serializer_class = HotsportSerializer
+    def get_queryset(self):
+        """
+        Optionally restricts the returned hotspots to a given scene,
+        by filtering against a `scene` query parameter in the URL.
+        """
+        queryset = Hotspot.objects.all()
+        scene_id = self.request.query_params.get('scene', None)
+        if scene_id is not None:
+            queryset = queryset.filter(scene__id=scene_id)
+        return queryset
