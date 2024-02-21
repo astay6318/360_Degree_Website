@@ -9,7 +9,8 @@ router.register(r'imageQuery', views.RandomViewSet)
 router.register(r'teachers', views.TeacherViewSet) 
 router.register(r'lessons', views.LessonViewSet)
 router.register(r'subchapters',views.SubChapterViewSet)
-
+router.register(r'scenes',views.SceneViewSet)
+router.register(r'hotspots',views.HotspotViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('register/', views.register, name='register'),
