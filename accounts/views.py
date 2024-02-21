@@ -120,6 +120,14 @@ class RandomViewSet(viewsets.ModelViewSet):
     serializer_class = ImgaeStoreSerializer
     # authentication_classes = (,)
     # permission_classes = [IsAuthenticated]
+    #when we upload a new image we create a new scene with id = name and imagePath = the path where the new image is saved
+    def perform_create(self, serializer):
+        serializer.save()
+        scene = Scene.objects.create(id=serializer.data['name'],imagePath=serializer.data['image'])
+        scene.save()
+        # return Response(serializer.data)
+        
+
 
 class TeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
