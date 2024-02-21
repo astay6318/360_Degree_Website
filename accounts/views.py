@@ -4,9 +4,9 @@ from django.contrib.auth import login
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .forms import CustomUserCreationForm, StudentLoginForm, TeacherLoginForm
-from .models import ImageStore,Teacher,SubChapter,Lesson
+from .models import ImageStore,Teacher,SubChapter,Lesson,Scene,Hotspot
 from rest_framework import viewsets
-from .serializers import ImgaeStoreSerializer,TeacherSerializer,SubChapterSerializer,LessonSerializer
+from .serializers import ImgaeStoreSerializer,TeacherSerializer,SubChapterSerializer,LessonSerializer,SceneSerializer, HotsportSerializer
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
@@ -132,3 +132,11 @@ class LessonViewSet(viewsets.ModelViewSet):
 class SubChapterViewSet(viewsets.ModelViewSet):
     queryset = SubChapter.objects.all()
     serializer_class = SubChapterSerializer
+
+class SceneViewSet(viewsets.ModelViewSet):
+    queryset = Scene.objects.all()
+    serializer_class = SceneSerializer
+
+class HotspotViewSet(viewsets.ModelViewSet):
+    queryset = Hotspot.objects.all()
+    serializer_class = HotsportSerializer

@@ -42,3 +42,14 @@ class SubChapter(models.Model):
 
     def __str__(self):
         return f"{self.lesson.title}-{self.title}"
+    
+class Scene(models.Model):
+    id = models.CharField(primary_key=True,max_length=500)
+    imagePath = models.CharField(max_length=500)
+
+class Hotspot(models.Model):
+    scene = models.ForeignKey(Scene,related_name = 'hotspots', on_delete=models.CASCADE)
+    id = models.AutoField(primary_key=True)
+    text = models.CharField(max_length=500)
+    yaw = models.FloatField()
+    pitch = models.FloatField()
