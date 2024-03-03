@@ -24,7 +24,7 @@ class SubChapterSerializer(serializers.ModelSerializer):
 class HotsportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hotspot
-        fields = ['id', 'text', 'yaw', 'pitch','scene']
+        fields = ['id', 'text', 'yaw', 'pitch','scene','audio','video_url']
 
 class SceneSerializer(serializers.ModelSerializer):
     hotspots = HotsportSerializer(many=True, read_only=True)

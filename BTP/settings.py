@@ -118,7 +118,7 @@ REST_FRAMEWORK = {
     # Other REST framework settings...
 }
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',  # Use the default ModelBackend for session authentication
+    # 'django.contrib.auth.backends.ModelBackend',  # Use the default ModelBackend for session authentication
     'allauth.account.auth_backends.AuthenticationBackend',  # Use allauth's authentication backend
 )
 from datetime import timedelta
@@ -184,6 +184,7 @@ CORS_ALLOW_METHODS = [
 ]
 
 MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR
 
 REST_AUTH = {
     'USE_JWT': True,
