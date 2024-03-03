@@ -53,3 +53,5 @@ class Hotspot(models.Model):
     text = models.CharField(max_length=500)
     yaw = models.FloatField()
     pitch = models.FloatField()
+    audio = models.FileField(upload_to='hotspot_audios/', null=True, blank=True)
+    video_url = models.URLField(max_length=500, blank=True, null=True)
