@@ -16,6 +16,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from dj_rest_auth.views import LoginView as RestAuthLoginView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import AccessToken
 
 @csrf_exempt
 @api_view(['POST'])
@@ -27,6 +28,7 @@ def register(request):
             user = form.save(commit=False)      #we are creating the user but not saving to the DB yet as we haven't assigned roles
             # User.role = request.POST.get('role')
             user.save()
+            token = AccessToken.for_user(user)
             login(request, user)
             if user.role == 'student':
                 return redirect('student_dashboard')
@@ -119,7 +121,7 @@ class RandomViewSet(viewsets.ModelViewSet):
     queryset = ImageStore.objects.all()
     serializer_class = ImgaeStoreSerializer
     # authentication_classes = (,)
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     #when we upload a new image we create a new scene with id = name and imagePath = the path where the new image is saved
     def perform_create(self, serializer):
         serializer.save()
