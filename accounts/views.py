@@ -17,6 +17,7 @@ from dj_rest_auth.views import LoginView as RestAuthLoginView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework import status
 
 @csrf_exempt
 @api_view(['POST'])
