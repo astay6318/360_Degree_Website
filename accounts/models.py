@@ -1,7 +1,9 @@
 from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.auth import get_user_model
 from django.db import models
-
+import uuid
 class CustomUser(AbstractUser):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     ROLES = (
         ('student', 'Student'),
         ('teacher', 'Teacher'),
@@ -18,7 +20,8 @@ class ImageStore(models.Model):
         return self.name
     
 class Teacher(models.Model):
-    # id = models.AutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name='teacher_profile')
     name= models.CharField(max_length=500)
     designation = models.CharField(max_length=500)
     subject = models.CharField(max_length=500)
@@ -28,6 +31,7 @@ class Teacher(models.Model):
         return self.name
     
 class Lesson(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=500)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='lessons')
 
@@ -35,6 +39,7 @@ class Lesson(models.Model):
         return self.title
 
 class SubChapter(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=500)
     image = models.FileField(upload_to="subchapters",blank=True,null=True)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE,default=0)
