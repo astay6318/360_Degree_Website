@@ -155,10 +155,7 @@ class TeacherViewSet(viewsets.ModelViewSet):
         if authenticated_user.role != 'teacher':
             return Response({'error': 'Only teachers can create teacher profiles'}, status=403)
 
-        # Perform other validation or customization as needed
-        ...
-
-        # Call the serializer to save the data
+        request.data['user'] = authenticated_user.id
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
