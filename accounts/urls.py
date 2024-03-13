@@ -7,7 +7,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 # from .views import CustomLoginView,student_dashboard,teacher_dashboard
 router = routers.SimpleRouter()
 router.register(r'imageQuery', views.RandomViewSet)
-router.register(r'teachers', views.TeacherViewSet) 
+router.register(r'teachers', views.TeacherViewSet,basename='teacher') 
 router.register(r'lessons', views.LessonViewSet)
 router.register(r'subchapters',views.SubChapterViewSet)
 router.register(r'scenes',views.SceneViewSet)

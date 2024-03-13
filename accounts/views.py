@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .forms import CustomUserCreationForm, StudentLoginForm, TeacherLoginForm
 from .models import ImageStore,Teacher,SubChapter,Lesson,Scene,Hotspot
-from rest_framework import viewsets
+from rest_framework import viewsets,permissions
 from .serializers import ImgaeStoreSerializer,TeacherSerializer,SubChapterSerializer,LessonSerializer,SceneSerializer, HotsportSerializer
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -32,7 +32,7 @@ def register(request):
             # token = AccessToken.for_user(user)
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
-            return JsonResponse({'access_token': access_token}, status=200)
+            return JsonResponse({'access_token': access_token,'user_id':user.id}, status=200)
             # login(request, user)
             # if user.role == 'student':
             #     return redirect('student_dashboard')
@@ -141,6 +141,29 @@ class RandomViewSet(viewsets.ModelViewSet):
 class TeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
+    permission_classes = [permissions.IsAuthenticated]  # Enforce authentication
+
+    def get_queryset(self):
+        # Filter queryset based on the authenticated user
+        return Teacher.objects.filter(user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        # Access authenticated user
+        authenticated_user = request.user
+
+        # Ensure that the authenticated user is a teacher
+        if authenticated_user.role != 'teacher':
+            return Response({'error': 'Only teachers can create teacher profiles'}, status=403)
+
+        # Perform other validation or customization as needed
+        ...
+
+        # Call the serializer to save the data
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=201)
 
 class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
