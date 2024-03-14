@@ -3,6 +3,7 @@ from django.shortcuts import render,redirect
 from django.contrib.auth import login
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
 from .forms import CustomUserCreationForm, StudentLoginForm, TeacherLoginForm
 from .models import ImageStore,Teacher,SubChapter,Lesson,Scene,Hotspot
 from rest_framework import viewsets,permissions
@@ -165,10 +166,29 @@ class TeacherViewSet(viewsets.ModelViewSet):
 class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        teacher_id = self.request.query_params.get('teacher')
+
+        if teacher_id:
+            teacher = get_object_or_404(Teacher, pk=teacher_id)
+            queryset = queryset.filter(teacher=teacher)
+
+        return queryset
 
 class SubChapterViewSet(viewsets.ModelViewSet):
     queryset = SubChapter.objects.all()
     serializer_class = SubChapterSerializer
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        lesson_id = self.request.query_params.get('lesson')
+
+        if lesson_id:
+            queryset = queryset.filter(lesson=lesson_id)
+
+        return queryset
 
 class SceneViewSet(viewsets.ModelViewSet):
     queryset = Scene.objects.all()

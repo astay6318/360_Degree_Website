@@ -42,7 +42,7 @@ class SubChapter(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=500)
     image = models.FileField(upload_to="subchapters",blank=True,null=True)
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE,default=0)
+    # teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE,default=0)
     lesson = models.ForeignKey(Lesson,on_delete=models.CASCADE,related_name="subchapters")
 
     def __str__(self):
