@@ -12,12 +12,6 @@ class CustomUser(AbstractUser):
     last_name = models.CharField(max_length=100)
     role = models.CharField(max_length=20, choices=ROLES)
 
-class ImageStore(models.Model):
-    image=models.FileField(null=True,blank=True,upload_to="media")
-    name=models.CharField(null=True,blank=True,max_length=500)
-
-    def __str__(self) -> str:
-        return self.name
     
 class Teacher(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -48,9 +42,17 @@ class SubChapter(models.Model):
     def __str__(self):
         return f"{self.lesson.title}-{self.title}"
     
+class ImageStore(models.Model):
+    image=models.FileField(null=True,blank=True,upload_to="media")
+    name=models.CharField(null=True,blank=True,max_length=500)
+    subchapter = models.ForeignKey(SubChapter,on_delete=models.CASCADE,related_name='images')
+
+    def __str__(self) -> str:
+        return self.name
 class Scene(models.Model):
     id = models.CharField(primary_key=True,max_length=500)
     imagePath = models.CharField(max_length=500)
+    subchapter = models.ForeignKey(SubChapter, on_delete=models.CASCADE, related_name='scenes',default=uuid.uuid4)
 
 class Hotspot(models.Model):
     scene = models.ForeignKey(Scene,related_name = 'hotspots', on_delete=models.CASCADE)

@@ -130,10 +130,17 @@ class RandomViewSet(viewsets.ModelViewSet):
     #when we upload a new image we create a new scene with id = name and imagePath = the path where the new image is saved
     def perform_create(self, serializer):
         user = self.request.user
+        subchapter_id = self.request.data.get('subchapter')
+        try:
+            subchapter = SubChapter.objects.get(id=subchapter_id)
+        except SubChapter.DoesNotExist:
+            return Response({'error': 'Subchapter does not exist'}, status=status.HTTP_400_BAD_REQUEST)
         if user.role != 'teacher':
             return Response({'error': 'Only teachers are allowed to upload images'}, status=status.HTTP_403_FORBIDDEN)
+        if subchapter.lesson.teacher.user != user:
+            return Response({'error': 'You are not authorized to upload images for this subchapter'}, status=status.HTTP_403_FORBIDDEN)
         serializer.save()
-        scene = Scene.objects.create(id=serializer.data['name'],imagePath=serializer.data['image'])
+        scene = Scene.objects.create(id=serializer.data['name'],imagePath=serializer.data['image'],subchapter = subchapter)
         scene.save()
         # return Response(serializer.data)
         
