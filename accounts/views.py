@@ -5,9 +5,9 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from .forms import CustomUserCreationForm, StudentLoginForm, TeacherLoginForm
-from .models import ImageStore,Teacher,SubChapter,Lesson,Scene,Hotspot
+from .models import ImageStore,Teacher,SubChapter,Lesson,Scene,Hotspot,Student
 from rest_framework import viewsets,permissions
-from .serializers import ImgaeStoreSerializer,TeacherSerializer,SubChapterSerializer,LessonSerializer,SceneSerializer, HotsportSerializer
+from .serializers import ImgaeStoreSerializer,TeacherSerializer,SubChapterSerializer,LessonSerializer,SceneSerializer, HotsportSerializer, StudentSerializer
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
@@ -177,12 +177,18 @@ class LessonViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        teacher_id = self.request.query_params.get('teacher')
+        user = self.request.user
 
-        if teacher_id:
-            teacher = get_object_or_404(Teacher, pk=teacher_id)
-            queryset = queryset.filter(teacher=teacher)
-
+        # Check if the user is a teacher or an admin
+        if user.role == 'teacher' or user.is_superuser:
+            teacher_id = self.request.query_params.get('teacher')
+            if teacher_id:
+                teacher = get_object_or_404(Teacher, pk=teacher_id)
+                queryset = queryset.filter(teacher=teacher)
+        elif user.role == 'student':
+            # Allow students to see all lessons
+            pass
+        
         return queryset
 
 class SubChapterViewSet(viewsets.ModelViewSet):
@@ -220,3 +226,7 @@ class HotspotViewSet(viewsets.ModelViewSet):
         if scene_id is not None:
             queryset = queryset.filter(scene__id=scene_id)
         return queryset
+    
+class StudentViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
