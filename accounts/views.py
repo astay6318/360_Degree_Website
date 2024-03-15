@@ -200,6 +200,12 @@ class SubChapterViewSet(viewsets.ModelViewSet):
 class SceneViewSet(viewsets.ModelViewSet):
     queryset = Scene.objects.all()
     serializer_class = SceneSerializer
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        subchapter_id = self.request.query_params.get('subchapter', None)
+        if subchapter_id is not None:
+            queryset = queryset.filter(subchapter__id=subchapter_id)
+        return queryset
 
 class HotspotViewSet(viewsets.ModelViewSet):
     queryset = Hotspot.objects.all()
