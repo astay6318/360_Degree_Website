@@ -8,6 +8,7 @@ class CustomUser(AbstractUser):
         ('student', 'Student'),
         ('teacher', 'Teacher'),
     )
+    email = models.EmailField(null=True,blank=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     role = models.CharField(max_length=20, choices=ROLES)

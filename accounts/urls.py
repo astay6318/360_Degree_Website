@@ -20,4 +20,5 @@ urlpatterns = [
     # path('dj-rest-auth/login/', CustomLoginView.as_view(), name='rest_login'),
     path('api/token/', obtain_auth_token, name='api_token'),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
+    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls'))
 ]
