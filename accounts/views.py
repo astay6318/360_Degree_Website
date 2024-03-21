@@ -227,6 +227,6 @@ class HotspotViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(scene__id=scene_id)
         return queryset
     
-class StudentViewSet(viewsets.ReadOnlyModelViewSet):
+class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer

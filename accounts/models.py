@@ -69,7 +69,7 @@ class Student(models.Model):
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name='student_profile')
     name = models.CharField(max_length=500)
     photo = models.FileField(null=True,blank=True,upload_to="students")
-    lesson = models.ForeignKey(Lesson,related_name='students',on_delete=models.CASCADE)
+    lesson = models.ForeignKey(Lesson,related_name='students',on_delete=models.CASCADE,null=True,blank=True)
 
     def __str__(self):
         return self.name
