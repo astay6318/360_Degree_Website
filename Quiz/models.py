@@ -18,7 +18,9 @@ class Quiz(models.Model):
 
 class Question(models.Model):
     text = models.TextField()
-    quiz = models.ForeignKey(Quiz, related_name="questions", on_delete=models.CASCADE,default=1)
+    quiz = models.ForeignKey(
+        Quiz, related_name="questions", on_delete=models.CASCADE, default=1
+    )
 
     class Meta:
         app_label = "Quiz"
@@ -30,10 +32,9 @@ class Option(models.Model):
         Question,
         related_name="options",
         on_delete=models.CASCADE,
-        default=1  # Provide a suitable default value here
+        default=1,  # Provide a suitable default value here
     )
     is_correct = models.BooleanField(default=False)
 
     class Meta:
         app_label = "Quiz"
-
