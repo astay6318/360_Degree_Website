@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-from .models import Subject, Quiz, Question, Option
+from .models import Lesson, Quiz, Question, Option
 
 
 @csrf_exempt
@@ -12,14 +12,18 @@ def create_quiz(request):
 
         # Extract relevant information from the JSON data
         quiz_title = data.get("title")
-        subject_name = data.get("subject")
+        lesson_id = data.get("lesson_id")
         questions_data = data.get("questions")
 
-        # Retrieve or create the Subject object
-        subject, _ = Subject.objects.get_or_create(name=subject_name)
+        # Retrieve or create the Lesson object
+        lesson, _ = Lesson.objects.get_or_create(lesson_id=lesson_id)
 
-        # Create the Quiz object
-        quiz = Quiz.objects.create(title=quiz_title, subject=subject)
+        # Check if a quiz already exists for the lesson
+        try:
+            quiz = Quiz.objects.get(lesson=lesson)
+        except Quiz.DoesNotExist:
+            # Create a new quiz object for the lesson
+            quiz = Quiz.objects.create(title=quiz_title, lesson=lesson)
 
         # Create Question and Option objects and associate them with the Quiz
         for question_data in questions_data:
@@ -40,67 +44,45 @@ def create_quiz(request):
 
 @csrf_exempt
 def get_quiz(request):
-    # Get the subject and title from the query parameters
-    subject_name = request.GET.get("subject")
-    quiz_title = request.GET.get("title")
-
-    # Retrieve the Subject object
-    try:
-        subject = Subject.objects.get(name=subject_name)
-    except Subject.DoesNotExist:
-        return JsonResponse(
-            {"error": f'Subject "{subject_name}" not found'}, status=404
-        )
-
-    # Retrieve the Quiz object
-    try:
-        quiz = Quiz.objects.get(title=quiz_title, subject=subject)
-    except Quiz.DoesNotExist:
-        return JsonResponse(
-            {"error": f'Quiz "{quiz_title}" for subject "{subject_name}" not found'},
-            status=404,
-        )
-
-    # Prepare the quiz data to be returned in the response
-    quiz_data = {
-        "title": quiz.title,
-        "subject": quiz.subject.name,
-        "questions": [
-            {
-                "text": question.text,
-                "options": [
-                    {"text": option.text, "is_correct": option.is_correct}
-                    for option in question.options.all()
-                ],
-            }
-            for question in quiz.questions.all()
-        ],
-    }
-
-    # Return the quiz data in JSON format
-    return JsonResponse(quiz_data)
-
-
-@csrf_exempt
-def get_quiz_by_title(request):
     if request.method == "GET":
-        title = request.GET.get("title")
+        lesson_id = request.GET.get("lesson_id")
+
+        # Retrieve the Lesson object
         try:
-            quiz = Quiz.objects.get(title=title)
-            quiz_data = {
-                "title": quiz.title,
-                "subject": quiz.subject.name,
-                "questions": [
-                    {
-                        "text": question.text,
-                        "options": [
-                            {"text": option.text, "is_correct": option.is_correct}
-                            for option in question.options.all()  # Access related options directly
-                        ],
-                    }
-                    for question in quiz.questions.all()
-                ],
-            }
-            return JsonResponse(quiz_data)
+            # print(lesson_id == "c222a68d-5dc6-4647-aceb-ede3dde31c54")
+            lesson = Lesson.objects.get(lesson_id=lesson_id)
+        except Lesson.DoesNotExist:
+            return JsonResponse(
+                {"error": f'Lesson with ID "{lesson_id}" not found'}, status=404
+            )
+
+        # Retrieve the Quiz object associated with the Lesson
+        try:
+            quiz = Quiz.objects.get(lesson=lesson)
         except Quiz.DoesNotExist:
-            return JsonResponse({"error": "Quiz not found"}, status=404)
+            return JsonResponse(
+                {"error": f'Quiz for Lesson with ID "{lesson_id}" not found'},
+                status=404,
+            )
+
+        # Retrieve all questions and options associated with the Quiz
+        questions = quiz.questions.all()
+        quiz_data = {
+            "title": quiz.title,
+            "lesson_id": lesson.lesson_id,
+            "questions": [
+                {
+                    "text": question.text,
+                    "options": [
+                        {"text": option.text, "is_correct": option.is_correct}
+                        for option in question.options.all()
+                    ],
+                }
+                for question in questions
+            ],
+        }
+
+        # Return the quiz data in JSON format
+        return JsonResponse(quiz_data)
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=405)
