@@ -12,6 +12,10 @@ class CustomUser(AbstractUser):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     role = models.CharField(max_length=20, choices=ROLES)
+    is_email_verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.username
 
     
 class Teacher(models.Model):
@@ -29,7 +33,12 @@ class Lesson(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=500)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='lessons')
+    enrollment_link = models.CharField(max_length=100, blank=True, null=True)
 
+    def generate_enrollment_link(self):
+        if not self.enrollment_link:
+            self.enrollment_link = str(uuid.uuid4())
+            
     def __str__(self):
         return self.title
 
@@ -69,7 +78,7 @@ class Student(models.Model):
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name='student_profile')
     name = models.CharField(max_length=500)
     photo = models.FileField(null=True,blank=True,upload_to="students")
-    lesson = models.ForeignKey(Lesson,related_name='students',on_delete=models.CASCADE,null=True,blank=True)
+    lesson = models.ManyToManyField(Lesson,related_name='students',null=True,blank=True)
 
     def __str__(self):
         return self.name

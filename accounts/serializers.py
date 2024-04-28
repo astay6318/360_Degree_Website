@@ -9,22 +9,36 @@ from allauth.account.utils import setup_user_email
 from dj_rest_auth.registration.serializers import RegisterSerializer
 
 
+# class CustomRegisterSerializer(RegisterSerializer):
+    # first_name = serializers.CharField()
+    # last_name = serializers.CharField()
+    # role = serializers.CharField()
+    # email = None
+
+    # def get_cleaned_data(self):
+    #     super(CustomRegisterSerializer, self).get_cleaned_data()
+    #     return {
+    #         'username': self.validated_data.get('username', ''),
+    #         'password1': self.validated_data.get('password1', ''),
+    #         'password2': self.validated_data.get('password2', ''),
+    #         'first_name': self.validated_data.get('first_name', ''),
+    #         'last_name': self.validated_data.get('last_name', ''),
+    #         'role': self.validated_data.get('role', '')
+    #     }
+
 class CustomRegisterSerializer(RegisterSerializer):
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
-    role = serializers.CharField()
-    email = None
+    role = serializers.ChoiceField(choices=CustomUser.ROLES)
 
     def get_cleaned_data(self):
-        super(CustomRegisterSerializer, self).get_cleaned_data()
-        return {
-            'username': self.validated_data.get('username', ''),
-            'password1': self.validated_data.get('password1', ''),
-            'password2': self.validated_data.get('password2', ''),
-            'first_name': self.validated_data.get('first_name', ''),
-            'last_name': self.validated_data.get('last_name', ''),
-            'role': self.validated_data.get('role', '')
-        }
+        super().get_cleaned_data()
+        self.cleaned_data['role'] = self.validated_data.get('role', '')
+        return self.cleaned_data
+
+    def save(self, request):
+        user = super().save(request)
+        user.role = self.cleaned_data.get('role')
+        user.save()
+        return user
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -66,4 +80,5 @@ class SceneSerializer(serializers.ModelSerializer):
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ['lesson']
