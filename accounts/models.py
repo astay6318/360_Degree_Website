@@ -24,6 +24,7 @@ class Teacher(models.Model):
     name= models.CharField(max_length=500)
     designation = models.CharField(max_length=500)
     subject = models.CharField(max_length=500)
+    affiliation = models.CharField(max_length=500)
     photo = models.FileField(null=True,blank=True,upload_to="teachers")
     
     def __str__(self):
